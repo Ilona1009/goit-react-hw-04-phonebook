@@ -63,7 +63,7 @@ export class App extends Component {
           <Filter value={filter} onChange={this.handleChange} />
           <ContactList
             contacts={this.getFindedContacts()}
-            ondDeleteContact={this.deleteContact}
+            onDeleteContact={this.deleteContact}
           />
         </DivStyled>
       </>

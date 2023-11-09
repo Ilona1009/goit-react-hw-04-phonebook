@@ -13,6 +13,7 @@ export const Contact = ({ contact, onDeleteContact }) => {
         onClick={() => {
           onDeleteContact(contact.id);
         }}
+        type="button"
       >
         Delete
       </ButtonDeleteStyled>
