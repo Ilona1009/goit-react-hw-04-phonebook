@@ -1,88 +1,80 @@
-import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Formik } from 'formik';
+
 import {
   ButtonAddContactStyled,
   FormStyled,
   InputStyled,
   LabelStyled,
 } from './ContactFormStyled';
+import * as Yup from 'yup';
 import { nanoid } from 'nanoid';
 
-export class ContactForm extends Component {
-  state = {
-    name: '',
-    number: '',
+export const ContactForm = ({ onSubmit }) => {
+  const validationSchema = Yup.object({
+    name: Yup.string().required('Name is required'),
+    number: Yup.string()
+      .matches(
+        /^\d{3}-\d{2}-\d{2}$/,
+        'Phone number must be in the format "000-00-00"'
+      )
+      .required('Number is required'),
+  });
+
+  const formatPhoneNumber = value => {
+    const phoneNumber = value.replace(/\D/g, '');
+    if (phoneNumber.length <= 6) {
+      return phoneNumber.replace(/(\d{3})(\d{0,2})/, '$1-$2');
+    } else {
+      return phoneNumber.replace(/(\d{3})(\d{2})(\d{0,2})/, '$1-$2-$3');
+    }
   };
 
-  handleChange = e => {
-    const { name, value } = e.currentTarget;
-    this.setState({ [name]: value });
+  const handlePhoneChange = (e, setFieldValue) => {
+    const { value } = e.target;
+    const formattedValue = formatPhoneNumber(value);
+    setFieldValue('number', formattedValue);
   };
 
-  handleSubmit = evt => {
-    evt.preventDefault();
-    this.props.onSubmit(this.state);
-    this.resetInput();
+  const handleSubmit = (values, { resetForm }) => {
+    onSubmit({ ...values, id: nanoid() });
+    resetForm();
   };
 
-  resetInput = () => {
-    this.setState({
-      name: '',
-      number: '',
-    });
-  };
+  return (
+    <>
+      <Formik
+        initialValues={{
+          name: '',
+          number: '',
+        }}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ values, setFieldValue }) => (
+          <FormStyled>
+            <LabelStyled>name</LabelStyled>
+            <InputStyled type="text" name="name" id="name" />
 
-  nameInputId = nanoid();
-  numberInputId = nanoid();
-
-  render() {
-    const { name, number } = this.state;
-    return (
-      <>
-        {' '}
-        <FormStyled onSubmit={this.handleSubmit}>
-          <LabelStyled>
-            Name
+            <LabelStyled>number</LabelStyled>
             <InputStyled
-              onChange={this.handleChange}
+              onChange={e => handlePhoneChange(e, setFieldValue)}
               type="text"
-              name="name"
-              id={this.nameInputId}
-              pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Ba"
-              value={name}
-              required
-            />
-          </LabelStyled>
-
-          <LabelStyled>
-            Number
-            <InputStyled
-              onChange={this.handleChange}
-              type="tel"
+              id="number"
               name="number"
-              pattern="\+?\d{1,4}?[\-.\s]?\(?\d{1,3}?\)?[\-.\s]?\d{1,4}[\-.\s]?\d{1,4}[\-.\s]?\d{1,9}"
-              title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-              value={number}
-              required
+              value={values.number}
             />
-          </LabelStyled>
 
-          <ButtonAddContactStyled type="submit" onClick={this.handleChange}>
-            Add contact
-          </ButtonAddContactStyled>
-        </FormStyled>
-        <p>
-          {name}
-          {number}
-        </p>
-      </>
-    );
-  }
-}
+            <ButtonAddContactStyled type="submit">
+              Submit
+            </ButtonAddContactStyled>
+          </FormStyled>
+        )}
+      </Formik>
+    </>
+  );
+};
 
 ContactForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
-
-export default ContactForm;

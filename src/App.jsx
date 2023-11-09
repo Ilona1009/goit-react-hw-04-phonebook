@@ -1,8 +1,9 @@
 import { Component } from 'react';
-import ContactForm from './components/ContactForm/ContactForm';
-import Filter from './components/Filter/Filter';
+import { ContactForm } from './components/ContactForm/ContactForm';
 import { nanoid } from 'nanoid';
 import { DivStyled } from './components/App/AppStyled';
+import { ContactList } from 'components/ContactList/ContactList';
+import { Filter } from 'components/Filter/Filter';
 
 export class App extends Component {
   state = {
@@ -13,6 +14,11 @@ export class App extends Component {
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
     filter: '',
+  };
+
+  handleChange = e => {
+    const { name, value } = e.target;
+    this.setState({ [name]: value });
   };
 
   handleSubmit = ({ name, number }) => {
@@ -27,12 +33,8 @@ export class App extends Component {
     findedName
       ? alert(`Contact ${contact.name} is already in the contacts list`)
       : this.setState(prevState => {
-          return { contacts: [contact, ...prevState.contacts] };
+          return { contacts: [...prevState.contacts, contact] };
         });
-  };
-
-  changeFilter = event => {
-    this.setState({ filter: event.target.value });
   };
 
   getFindedContacts = () => {
@@ -44,29 +46,27 @@ export class App extends Component {
     );
   };
 
-  deleteContact = contactId => {
+  deleteContact = id => {
     this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
+      contacts: prevState.contacts.filter(contact => contact.id !== id),
     }));
   };
 
   render() {
-    const { filter, contacts } = this.state;
-    const filteredContacts = this.getFindedContacts(contacts, filter);
-    const onChange = this.changeFilter;
+    const { filter } = this.state;
     return (
-      <DivStyled>
-        <h1>Phonebook</h1>
-        <ContactForm onSubmit={this.handleSubmit}></ContactForm>
-        <Filter
-          value={filter}
-          contacts={filteredContacts}
-          onChange={onChange}
-          onDeleteContact={this.deleteContact}
-        ></Filter>
-      </DivStyled>
+      <>
+        {' '}
+        <DivStyled>
+          <h1>Phonebook</h1>
+          <ContactForm onSubmit={this.handleSubmit} />
+          <Filter value={filter} onChange={this.handleChange} />
+          <ContactList
+            contacts={this.getFindedContacts()}
+            ondDeleteContact={this.deleteContact}
+          />
+        </DivStyled>
+      </>
     );
   }
 }
-
-export default App;
