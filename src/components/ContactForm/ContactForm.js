@@ -3,6 +3,7 @@ import { Formik } from 'formik';
 
 import {
   ButtonAddContactStyled,
+  Error,
   FormStyled,
   InputStyled,
   LabelStyled,
@@ -55,6 +56,7 @@ export const ContactForm = ({ onSubmit }) => {
           <FormStyled>
             <LabelStyled>name</LabelStyled>
             <InputStyled type="text" name="name" id="name" />
+            <Error name="name" component="div" />
 
             <LabelStyled>number</LabelStyled>
             <InputStyled
@@ -64,6 +66,7 @@ export const ContactForm = ({ onSubmit }) => {
               name="number"
               value={values.number}
             />
+            <Error name="number" component="div" />
 
             <ButtonAddContactStyled type="submit">
               Submit

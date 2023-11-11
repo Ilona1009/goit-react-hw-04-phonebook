@@ -15,6 +15,21 @@ export class App extends Component {
     ],
     filter: '',
   };
+  componentDidMount() {
+    const savedContacts = JSON.parse(localStorage.getItem('Contact-list'));
+    if (savedContacts) {
+      this.setState({ contacts: savedContacts });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      window.localStorage.setItem(
+        'Contact-list',
+        JSON.stringify(this.state.contacts)
+      );
+    }
+  }
 
   handleChange = e => {
     const { name, value } = e.target;
