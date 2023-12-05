@@ -13,8 +13,7 @@ const initialState = [
 ];
 export const App = () => {
   const [contacts, setContacts] = useState(() => {
-    const savedContacts = JSON.parse(localStorage.getItem('Contact-list'));
-    return savedContacts || initialState;
+    return JSON.parse(localStorage.getItem('Contact-list')) || initialState;
   });
   const [filter, setFilter] = useState('');
 
@@ -53,10 +52,7 @@ export const App = () => {
   const findedContacts = getFindedContacts();
 
   const deleteContact = id => {
-    setContacts(prevState => ({
-      ...prevState,
-      contacts: prevState.contacts.filter(contact => contact.id !== id),
-    }));
+    setContacts(prevState => contacts.filter(contact => contact.id !== id));
   };
 
   return (
