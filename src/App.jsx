@@ -22,8 +22,8 @@ export const App = () => {
   }, [contacts]);
 
   const handleChange = e => {
-    const { name, value } = e.target;
-    setFilter({ [name]: value });
+    const { value } = e.target;
+    setFilter(value);
   };
 
   const handleSubmit = ({ name, number }) => {
